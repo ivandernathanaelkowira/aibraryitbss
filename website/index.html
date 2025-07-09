@@ -186,76 +186,34 @@
     <!-- Custom JS -->
     <script src="script.js"></script>
     <script>
-      // Check authentication status on page load
-      async function checkAuthStatus() {
-        try {
-          const response = await fetch('/api/user');
-          const data = await response.json();
-          
-          if (data.success) {
-            // User is logged in
-            document.getElementById('auth-buttons').style.display = 'none';
-            document.getElementById('user-profile').style.display = 'block';
-            document.getElementById('username-display').textContent = `Welcome, ${data.user.username}!`;
-            // Mobile
-            document.getElementById('auth-buttons-mobile').style.display = 'none';
-            document.getElementById('user-profile-mobile').style.display = 'block';
-            document.getElementById('username-display-mobile').textContent = `Welcome, ${data.user.username}!`;
-            // Show admin panel link for admin users
-            if (data.user.role === 'admin') {
-              document.getElementById('admin-link').style.display = 'inline-block';
-              document.getElementById('admin-link-mobile').style.display = 'inline-block';
-            }
-          } else {
-            // User is not logged in
-            document.getElementById('auth-buttons').style.display = 'block';
-            document.getElementById('user-profile').style.display = 'none';
-            // Mobile
-            document.getElementById('auth-buttons-mobile').style.display = 'block';
-            document.getElementById('user-profile-mobile').style.display = 'none';
-          }
-        } catch (error) {
-          console.error('Error checking auth status:', error);
+      // Cek status login dari localStorage
+      const user = JSON.parse(localStorage.getItem('user'));
+      if (!user) {
+        window.location.href = '/auth.html';
+      } else {
+        // Tampilkan username dan tombol logout
+        document.getElementById('auth-buttons').style.display = 'none';
+        document.getElementById('user-profile').style.display = 'block';
+        document.getElementById('username-display').textContent = `Welcome, ${user.username}!`;
+        // Mobile
+        document.getElementById('auth-buttons-mobile').style.display = 'none';
+        document.getElementById('user-profile-mobile').style.display = 'block';
+        document.getElementById('username-display-mobile').textContent = `Welcome, ${user.username}!`;
+        // Tampilkan link admin jika user admin
+        if (user.role === 'admin') {
+          document.getElementById('admin-link').style.display = 'inline-block';
+          document.getElementById('admin-link-mobile').style.display = 'inline-block';
         }
       }
-      
       // Handle logout
-      document.getElementById('logout-btn').addEventListener('click', async function() {
-        try {
-          const response = await fetch('/api/logout', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            }
-          });
-          
-          const data = await response.json();
-          
-          if (data.success) {
-            window.location.reload();
-          }
-        } catch (error) {
-          console.error('Error logging out:', error);
-        }
+      document.getElementById('logout-btn').addEventListener('click', function() {
+        localStorage.removeItem('user');
+        window.location.reload();
       });
-      document.getElementById('logout-btn-mobile').addEventListener('click', async function() {
-        try {
-          const response = await fetch('/api/logout', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            }
-          });
-          const data = await response.json();
-          if (data.success) {
-            window.location.reload();
-          }
-        } catch (error) {
-          console.error('Error logging out:', error);
-        }
+      document.getElementById('logout-btn-mobile').addEventListener('click', function() {
+        localStorage.removeItem('user');
+        window.location.reload();
       });
-      // Check auth status when page loads
-      checkAuthStatus();
     </script>
   </body>
 </html>
