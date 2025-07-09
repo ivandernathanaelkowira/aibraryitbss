@@ -1,0 +1,29 @@
+{
+  "name": "aibrary-server",
+  "version": "1.0.0",
+  "description": "AIBRARY - AI Tools Library with Authentication",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.50.4",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.2",
+    "express": "^4.18.2",
+    "express-session": "^1.17.3",
+    "path": "^0.12.7"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
+  "keywords": [
+    "ai",
+    "tools",
+    "library",
+    "authentication"
+  ],
+  "author": "AIBRARY Team",
+  "license": "MIT"
+}

@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Search AI Tools | AIBRARY</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top animate__animated animate__fadeInDown">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="index.html#home">AIBRARY</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link" href="index.html#home">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="index.html#about">About</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#">Search AI Tools</a>
+          </li>
+        </ul>
+        <div class="ms-3 d-none d-lg-block">
+          <div id="user-profile">
+            <span id="username-display" class="me-2"></span>
+            <button id="logout-btn" class="btn btn-outline-danger btn-sm">Logout</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <section class="py-5 bg-light animate__animated animate__fadeIn">
+    <div class="container">
+      <div class="text-center mb-5">
+        <h1 class="display-5 fw-bold mb-3">Discover AI Tools</h1>
+        <p class="lead mb-4">Explore the best AI tools across different categories. Find the perfect tool for your needs!</p>
+        
+        <!-- Search Form -->
+        <form class="d-flex justify-content-center mb-4" id="search-tools-form">
+          <div class="input-group w-75">
+            <input class="form-control shadow-sm search-input" type="search" placeholder="Search AI tools by name, category, or features..." aria-label="Search" id="search-tools" />
+        <button class="btn btn-primary shadow-sm" type="submit" id="search-tools-btn">
+          <i class="fas fa-search"></i>
+        </button>
+          </div>
+      </form>
+
+        <!-- Category Filter -->
+        <div class="category-filter mb-4">
+          <div class="btn-group" role="group" aria-label="Category filter">
+            <button type="button" class="btn btn-outline-primary active" data-category="All">All</button>
+            <button type="button" class="btn btn-outline-primary" data-category="Text & Writing">Text & Writing</button>
+            <button type="button" class="btn btn-outline-primary" data-category="Image Generation">Image Generation</button>
+            <button type="button" class="btn btn-outline-primary" data-category="Video & Audio">Video & Audio</button>
+            <button type="button" class="btn btn-outline-primary" data-category="Productivity">Productivity</button>
+            <button type="button" class="btn btn-outline-primary" data-category="Code & Development">Code & Development</button>
+          </div>
+        </div>
+
+        <!-- Results Counter -->
+        <div class="results-info mb-3">
+          <span id="results-count" class="text-muted">Showing all AI tools</span>
+        </div>
+      </div>
+
+      <!-- AI Tools Grid -->
+      <div id="ai-tools-grid" class="row g-4">
+        <!-- AI Tools cards will be loaded here -->
+      </div>
+
+      <!-- No Results Message -->
+      <div id="no-results" class="text-center py-5" style="display: none;">
+        <div class="alert alert-info">
+          <i class="fas fa-search fa-2x mb-3"></i>
+          <h4>No AI tools found</h4>
+          <p>Try adjusting your search terms or browse by category.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="py-4 bg-dark text-white text-center mt-5 animate__animated animate__fadeInUp">
+    <div class="container">
+      <small>&copy; 2025 AIBRARY. All rights reserved.</small>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="script.js"></script>
+  <script src="aiToolsData.js"></script>
+  <script>
+    // Cek login via localStorage
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (!user) {
+      window.location.href = '/auth.html';
+    } else {
+      document.getElementById('username-display').textContent = `Welcome, ${user.username}!`;
+    }
+    // Handle logout
+    document.getElementById('logout-btn').addEventListener('click', function() {
+      localStorage.removeItem('user');
+      window.location.href = '/auth.html';
+    });
+  </script>
+  <script>
+    // Global variables
+    let currentTools = [...aiToolsData];
+    let currentCategory = 'All';
+    let currentSearch = '';
+
+    // Load AI Tools
+    function loadAITools() {
+      displayTools(currentTools);
+      updateResultsCount();
+    }
+
+    // Display AI Tools
+    function displayTools(tools) {
+      const grid = document.getElementById('ai-tools-grid');
+      const noResults = document.getElementById('no-results');
+      
+      if (tools.length === 0) {
+        grid.innerHTML = '';
+        noResults.style.display = 'block';
+        return;
+      }
+      
+      noResults.style.display = 'none';
+      grid.innerHTML = '';
+      
+      tools.forEach((tool, index) => {
+        const card = createToolCard(tool, index);
+        grid.appendChild(card);
+      });
+    }
+
+    // Create Tool Card
+    function createToolCard(tool, index) {
+      const col = document.createElement('div');
+      col.className = 'col-12 col-md-6 col-lg-4 fade-in-up stagger-animation';
+      col.style.setProperty('--animation-order', index);
+      col.style.setProperty('--tool-color', tool.color);
+      col.style.setProperty('--tool-color-dark', getDarkerColor(tool.color));
+      
+      const priceClass = tool.price.toLowerCase().includes('free') ? 'free' : 'paid';
+      const ratingStars = '★'.repeat(Math.floor(tool.rating)) + '☆'.repeat(5 - Math.floor(tool.rating));
+      
+      col.innerHTML = `
+        <div class="card ai-tool-card h-100">
+          <div class="card-header">
+            <div class="tool-logo">
+              <img src="${tool.logo}" alt="${tool.name}" onerror="this.src='https://via.placeholder.com/40x40/3b82f6/ffffff?text=${tool.name.charAt(0)}'">
+            </div>
+            <h5 class="card-title">${tool.name}</h5>
+            <div class="card-category">${tool.category}</div>
+          </div>
+          <div class="card-body">
+            <p class="card-description">${tool.description}</p>
+            <div class="tool-features">
+              ${tool.features.map(feature => `<span class="feature-tag">${feature}</span>`).join('')}
+            </div>
+            <div class="tool-meta">
+              <div class="tool-rating">
+                <span class="rating-stars">${ratingStars}</span>
+                <span class="rating-value">${tool.rating}</span>
+              </div>
+              <span class="tool-price ${priceClass}">${tool.price}</span>
+            </div>
+          </div>
+          <div class="card-footer">
+            <a href="${tool.website}" target="_blank" rel="noopener noreferrer" class="visit-btn">
+              <i class="fas fa-external-link-alt me-2"></i>Visit Website
+            </a>
+          </div>
+        </div>
+      `;
+      
+      return col;
+    }
+
+    // Get darker color for gradient
+    function getDarkerColor(color) {
+      // Simple darkening - in production, use a proper color manipulation library
+      return color;
+    }
+
+    // Filter tools by category
+    function filterByCategory(category) {
+      currentCategory = category;
+      document.querySelectorAll('.category-filter .btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      event.target.classList.add('active');
+      
+      applyFilters();
+    }
+
+    // Search tools
+    function searchTools(query) {
+      currentSearch = query.toLowerCase();
+      applyFilters();
+    }
+
+    // Apply both category and search filters
+    function applyFilters() {
+      let filteredTools = [...aiToolsData];
+      
+      // Filter by category
+      if (currentCategory !== 'All') {
+        filteredTools = filteredTools.filter(tool => tool.category === currentCategory);
+      }
+      
+      // Filter by search query
+      if (currentSearch) {
+        filteredTools = filteredTools.filter(tool => 
+          tool.name.toLowerCase().includes(currentSearch) ||
+          tool.description.toLowerCase().includes(currentSearch) ||
+          tool.category.toLowerCase().includes(currentSearch) ||
+          tool.features.some(feature => feature.toLowerCase().includes(currentSearch))
+        );
+      }
+      
+      currentTools = filteredTools;
+      displayTools(currentTools);
+      updateResultsCount();
+    }
+
+    // Update results count
+    function updateResultsCount() {
+      const countElement = document.getElementById('results-count');
+      const total = aiToolsData.length;
+      const showing = currentTools.length;
+      
+      if (currentCategory === 'All' && !currentSearch) {
+        countElement.textContent = `Showing all ${total} AI tools`;
+      } else {
+        countElement.textContent = `Showing ${showing} of ${total} AI tools`;
+      }
+    }
+
+    // Event Listeners
+    document.addEventListener('DOMContentLoaded', function() {
+      // Category filter buttons
+      document.querySelectorAll('.category-filter .btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          filterByCategory(this.dataset.category);
+        });
+      });
+
+      // Search form
+      const searchForm = document.getElementById('search-tools-form');
+      const searchInput = document.getElementById('search-tools');
+      
+      searchForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        searchTools(searchInput.value.trim());
+      });
+
+      // Real-time search (optional)
+      searchInput.addEventListener('input', function() {
+        searchTools(this.value.trim());
+      });
+    });
+    
+    // Check auth status when page loads
+    // This script block is now redundant as authentication is handled by localStorage
+  </script>
+</body>
+</html> 
